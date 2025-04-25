@@ -47,12 +47,47 @@ interface Dataset extends BaseItem {
   metadata?: DatasetMetadata;
 }
 
+interface DigitalTwinMetadata {
+  name: string;
+  description: string;
+  version: string;
+  lastUpdated: string;
+  components: {
+    name: string;
+    description: string;
+    dataSources: string[];
+    updateFrequency: string;
+  }[];
+  accuracyMetrics: {
+    overall: string;
+    sensitivity: string;
+    specificity: string;
+    auc: string;
+  };
+  validation: {
+    method: string;
+    dataset: string;
+    results: string;
+  };
+  integration: {
+    platforms: string[];
+    apis: string[];
+    dataFormats: string[];
+  };
+  maintenance: {
+    schedule: string;
+    support: string;
+    documentation: string;
+  };
+}
+
 interface DigitalTwin extends BaseItem {
   type: 'digital-twin';
   components: string[];
   accuracy: string;
   size?: never;
   performance?: never;
+  metadata?: DigitalTwinMetadata;
 }
 
 interface AIModel extends BaseItem {
@@ -65,32 +100,11 @@ interface AIModel extends BaseItem {
 
 type MarketplaceItem = Dataset | DigitalTwin | AIModel;
 
-const isDigitalTwin = (item: MarketplaceItem): item is DigitalTwin => {
-  return item.type === 'digital-twin';
-};
-
-const ItemComponents = ({ item }: { item: DigitalTwin }) => {
-  return (
-    <div className="mb-4">
-      <h4 className="text-sm font-semibold mb-2">Components:</h4>
-      <div className="flex flex-wrap gap-2">
-        {item.components.map((component) => (
-          <span
-            key={component}
-            className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-xs"
-          >
-            {component}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'datasets' | 'digital-twins' | 'models'>('datasets');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
+  const [selectedDigitalTwin, setSelectedDigitalTwin] = useState<DigitalTwin | null>(null);
 
   const mockDatasets: Dataset[] = [
     {
@@ -186,7 +200,54 @@ export default function Home() {
       contributors: ["Stanford Medicine", "MIT"],
       license: "Commercial",
       blockchain: "Ethereum",
-      smartContract: "0xabcd...efgh"
+      smartContract: "0xabcd...efgh",
+      metadata: {
+        name: "Cardiovascular Digital Twin",
+        description: "A comprehensive digital twin system for cardiovascular health monitoring and disease prediction",
+        version: "2.1.0",
+        lastUpdated: "2024-03-15",
+        components: [
+          {
+            name: "ECG Analysis Module",
+            description: "Real-time ECG signal processing and anomaly detection",
+            dataSources: ["12-lead ECG", "Wearable ECG", "Hospital ECG systems"],
+            updateFrequency: "Real-time"
+          },
+          {
+            name: "Blood Pressure Monitor",
+            description: "Continuous blood pressure tracking and trend analysis",
+            dataSources: ["Smart BP monitors", "Hospital records", "Wearable devices"],
+            updateFrequency: "Hourly"
+          },
+          {
+            name: "Lifestyle Tracker",
+            description: "Activity, diet, and stress level monitoring",
+            dataSources: ["Fitness trackers", "Mobile apps", "Smart scales"],
+            updateFrequency: "Daily"
+          }
+        ],
+        accuracyMetrics: {
+          overall: "98.5%",
+          sensitivity: "99.2%",
+          specificity: "97.8%",
+          auc: "0.987"
+        },
+        validation: {
+          method: "Cross-validation with multiple datasets",
+          dataset: "Combined data from 5 major hospitals (n=50,000)",
+          results: "Consistent performance across all validation sets"
+        },
+        integration: {
+          platforms: ["Web", "Mobile", "Hospital EHR systems"],
+          apis: ["REST API", "WebSocket", "HL7 FHIR"],
+          dataFormats: ["JSON", "XML", "DICOM"]
+        },
+        maintenance: {
+          schedule: "Weekly updates, monthly major releases",
+          support: "24/7 technical support, dedicated account manager",
+          documentation: "Comprehensive API docs, user guides, and tutorials"
+        }
+      }
     }
   ];
 
@@ -290,6 +351,122 @@ export default function Home() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Citation</h3>
               <p className="text-gray-600 dark:text-gray-300">{dataset.metadata.citation}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const DigitalTwinMetadataView = ({ digitalTwin }: { digitalTwin: DigitalTwin }) => {
+    if (!digitalTwin.metadata) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h2 className="text-2xl font-bold">{digitalTwin.metadata.name}</h2>
+              <p className="text-gray-500 dark:text-gray-400">Version {digitalTwin.metadata.version}</p>
+            </div>
+            <button
+              onClick={() => setSelectedDigitalTwin(null)}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Description</h3>
+              <p className="text-gray-600 dark:text-gray-300">{digitalTwin.metadata.description}</p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Components</h3>
+              <div className="space-y-4">
+                {digitalTwin.metadata.components.map((component, index) => (
+                  <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-2">{component.name}</h4>
+                    <p className="text-gray-600 dark:text-gray-300 mb-2">{component.description}</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="font-medium mb-1">Data Sources</h5>
+                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-300">
+                          {component.dataSources.map((source, i) => (
+                            <li key={i}>{source}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-1">Update Frequency</h5>
+                        <p className="text-gray-600 dark:text-gray-300">{component.updateFrequency}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Accuracy Metrics</h3>
+                <ul className="space-y-2">
+                  <li><span className="font-medium">Overall Accuracy:</span> {digitalTwin.metadata.accuracyMetrics.overall}</li>
+                  <li><span className="font-medium">Sensitivity:</span> {digitalTwin.metadata.accuracyMetrics.sensitivity}</li>
+                  <li><span className="font-medium">Specificity:</span> {digitalTwin.metadata.accuracyMetrics.specificity}</li>
+                  <li><span className="font-medium">AUC:</span> {digitalTwin.metadata.accuracyMetrics.auc}</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Validation</h3>
+                <ul className="space-y-2">
+                  <li><span className="font-medium">Method:</span> {digitalTwin.metadata.validation.method}</li>
+                  <li><span className="font-medium">Dataset:</span> {digitalTwin.metadata.validation.dataset}</li>
+                  <li><span className="font-medium">Results:</span> {digitalTwin.metadata.validation.results}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Integration</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <h4 className="font-medium mb-2">Platforms</h4>
+                  <ul className="list-disc list-inside text-gray-600 dark:text-gray-300">
+                    {digitalTwin.metadata.integration.platforms.map((platform, i) => (
+                      <li key={i}>{platform}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">APIs</h4>
+                  <ul className="list-disc list-inside text-gray-600 dark:text-gray-300">
+                    {digitalTwin.metadata.integration.apis.map((api, i) => (
+                      <li key={i}>{api}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Data Formats</h4>
+                  <ul className="list-disc list-inside text-gray-600 dark:text-gray-300">
+                    {digitalTwin.metadata.integration.dataFormats.map((format, i) => (
+                      <li key={i}>{format}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Maintenance</h3>
+              <ul className="space-y-2">
+                <li><span className="font-medium">Update Schedule:</span> {digitalTwin.metadata.maintenance.schedule}</li>
+                <li><span className="font-medium">Support:</span> {digitalTwin.metadata.maintenance.support}</li>
+                <li><span className="font-medium">Documentation:</span> {digitalTwin.metadata.maintenance.documentation}</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -459,7 +636,13 @@ export default function Home() {
                 <div className="space-y-2">
                   <button 
                     className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                    onClick={() => item.type === 'dataset' && setSelectedDataset(item)}
+                    onClick={() => {
+                      if (item.type === 'dataset') {
+                        setSelectedDataset(item);
+                      } else if (item.type === 'digital-twin') {
+                        setSelectedDigitalTwin(item);
+                      }
+                    }}
                   >
                     View Details
                   </button>
@@ -474,6 +657,7 @@ export default function Home() {
       </div>
 
       {selectedDataset && <DatasetMetadataView dataset={selectedDataset} />}
+      {selectedDigitalTwin && <DigitalTwinMetadataView digitalTwin={selectedDigitalTwin} />}
     </main>
   );
 }
