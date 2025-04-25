@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 import { create } from 'ipfs-http-client';
+import ResearchDataExchangeABI from '../../contracts/artifacts/contracts/ResearchDataExchange.sol/ResearchDataExchange.json';
 
 const ipfs = create({ url: 'https://ipfs.infura.io:5001/api/v0' });
 
@@ -36,8 +37,7 @@ export const DataContribution = () => {
 
       // Get contract instance
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-      const contractABI = require('../../contracts/artifacts/contracts/ResearchDataExchange.sol/ResearchDataExchange.json').abi;
-      const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
+      const contract = new ethers.Contract(contractAddress, ResearchDataExchangeABI.abi, provider.getSigner());
 
       // Call contributeData function
       const tx = await contract.contributeData(

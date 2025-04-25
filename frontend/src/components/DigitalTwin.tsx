@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from '../context/Web3Context';
+import ResearchDataExchangeABI from '../../contracts/artifacts/contracts/ResearchDataExchange.sol/ResearchDataExchange.json';
 
 interface DigitalTwin {
   id: number;
@@ -15,17 +16,10 @@ export const DigitalTwinManager = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (isConnected && account && provider) {
-      loadDigitalTwins();
-    }
-  }, [isConnected, account, provider]);
-
-  const loadDigitalTwins = async () => {
+  const loadDigitalTwins = useCallback(async () => {
     try {
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-      const contractABI = require('../../contracts/artifacts/contracts/ResearchDataExchange.sol/ResearchDataExchange.json').abi;
-      const contract = new ethers.Contract(contractAddress, contractABI, provider);
+      const contract = new ethers.Contract(contractAddress, ResearchDataExchangeABI.abi, provider);
 
       const twinIds = await contract.getResearcherDigitalTwins(account);
       const twins: DigitalTwin[] = [];
@@ -45,7 +39,13 @@ export const DigitalTwinManager = () => {
       console.error('Error loading digital twins:', err);
       setError('Failed to load digital twins');
     }
-  };
+  }, [account, provider]);
+
+  useEffect(() => {
+    if (isConnected && account && provider) {
+      loadDigitalTwins();
+    }
+  }, [isConnected, account, provider, loadDigitalTwins]);
 
   const createDigitalTwin = async () => {
     if (!isConnected || !account || !provider || selectedDataHashes.length === 0) {
@@ -58,8 +58,7 @@ export const DigitalTwinManager = () => {
 
     try {
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-      const contractABI = require('../../contracts/artifacts/contracts/ResearchDataExchange.sol/ResearchDataExchange.json').abi;
-      const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
+      const contract = new ethers.Contract(contractAddress, ResearchDataExchangeABI.abi, provider.getSigner());
 
       const tx = await contract.createDigitalTwin(selectedDataHashes);
       await tx.wait();
