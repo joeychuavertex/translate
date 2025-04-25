@@ -19,17 +19,25 @@ interface BaseItem {
 interface Dataset extends BaseItem {
   type: 'dataset';
   size: string;
+  components?: never;
+  accuracy?: never;
+  performance?: never;
 }
 
 interface DigitalTwin extends BaseItem {
   type: 'digital-twin';
   components: string[];
   accuracy: string;
+  size?: never;
+  performance?: never;
 }
 
 interface AIModel extends BaseItem {
   type: 'model';
   performance: string;
+  size?: never;
+  components?: never;
+  accuracy?: never;
 }
 
 type MarketplaceItem = Dataset | DigitalTwin | AIModel;
@@ -221,7 +229,21 @@ export default function Home() {
                   {item.description}
                 </p>
                 
-                {isDigitalTwin(item) && <ItemComponents item={item} />}
+                {item.type === 'digital-twin' && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold mb-2">Components:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {item.components.map((component) => (
+                        <span
+                          key={component}
+                          className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-xs"
+                        >
+                          {component}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center mb-4">
                   <div className="flex items-center text-yellow-400 mr-4">
