@@ -126,6 +126,9 @@ export const DataContribution = () => {
 
       // Get contract instance
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+      if (!contractAddress) {
+        throw new Error('Contract address not configured');
+      }
       const contract = new ethers.Contract(contractAddress, ResearchDataExchangeABI, provider.getSigner());
 
       // Call contributeData function
