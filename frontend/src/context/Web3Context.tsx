@@ -25,20 +25,21 @@ const Web3Context = createContext<Web3ContextType>({
   provider: null,
 });
 
-export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
-  const web3React = useWeb3React() as any;
+export const Web3ContextProvider = ({ children }: { children: React.ReactNode }) => {
+  // @ts-ignore
+  const { activate, deactivate, account, chainId, library } = useWeb3React();
   const [isConnected, setIsConnected] = useState(false);
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
 
   useEffect(() => {
-    if (web3React.library) {
-      setProvider(web3React.library as ethers.providers.Web3Provider);
+    if (library) {
+      setProvider(library as ethers.providers.Web3Provider);
     }
-  }, [web3React.library]);
+  }, [library]);
 
   const connect = async () => {
     try {
-      await web3React.activate(injected);
+      await activate(injected);
       setIsConnected(true);
     } catch (error) {
       console.error('Failed to connect:', error);
@@ -47,7 +48,7 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
 
   const disconnect = () => {
     try {
-      web3React.deactivate();
+      deactivate();
       setIsConnected(false);
     } catch (error) {
       console.error('Failed to disconnect:', error);
@@ -60,8 +61,8 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
         connect,
         disconnect,
         isConnected,
-        account: web3React.account || null,
-        chainId: web3React.chainId || null,
+        account: account || null,
+        chainId: chainId || null,
         provider,
       }}
     >
