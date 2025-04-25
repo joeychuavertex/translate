@@ -1,13 +1,13 @@
 'use client';
 
-import { Web3Provider } from '../context/Web3Context';
+import { Web3ContextProvider } from '../context/Web3Context';
 import { DataContribution } from '../components/DataContribution';
 import { DigitalTwinList } from '../components/DigitalTwin';
 import { useWeb3 } from '../context/Web3Context';
 
 export default function Home() {
   return (
-    <Web3Provider>
+    <Web3ContextProvider>
       <div className="min-h-screen bg-gray-100">
         <header className="bg-white shadow">
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -25,7 +25,7 @@ export default function Home() {
           </div>
         </main>
       </div>
-    </Web3Provider>
+    </Web3ContextProvider>
   );
 }
 
