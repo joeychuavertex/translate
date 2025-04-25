@@ -34,6 +34,24 @@ interface AIModel extends BaseItem {
 
 type MarketplaceItem = Dataset | DigitalTwin | AIModel;
 
+const ItemComponents = ({ item }: { item: DigitalTwin }) => {
+  return (
+    <div className="mb-4">
+      <h4 className="text-sm font-semibold mb-2">Components:</h4>
+      <div className="flex flex-wrap gap-2">
+        {item.components.map((component) => (
+          <span
+            key={component}
+            className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-xs"
+          >
+            {component}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'datasets' | 'digital-twins' | 'models'>('datasets');
   const [searchQuery, setSearchQuery] = useState('');
@@ -199,21 +217,7 @@ export default function Home() {
                   {item.description}
                 </p>
                 
-                {item.type === 'digital-twin' && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold mb-2">Components:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {item.components.map((component) => (
-                        <span
-                          key={component}
-                          className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-xs"
-                        >
-                          {component}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                {item.type === 'digital-twin' && <ItemComponents item={item} />}
 
                 <div className="flex items-center mb-4">
                   <div className="flex items-center text-yellow-400 mr-4">
