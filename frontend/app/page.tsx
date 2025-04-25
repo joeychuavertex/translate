@@ -18,15 +18,23 @@ interface BaseItem {
 
 interface Dataset extends BaseItem {
   size: string;
+  components?: never;
+  accuracy?: never;
+  performance?: never;
 }
 
 interface DigitalTwin extends BaseItem {
   components: string[];
   accuracy: string;
+  size?: never;
+  performance?: never;
 }
 
 interface AIModel extends BaseItem {
   performance: string;
+  size?: never;
+  components?: never;
+  accuracy?: never;
 }
 
 type MarketplaceItem = Dataset | DigitalTwin | AIModel;
@@ -106,14 +114,14 @@ export default function Home() {
                                   mockModels;
 
   const isDigitalTwin = (item: MarketplaceItem): item is DigitalTwin => {
-    return 'components' in item;
+    return 'components' in item && Array.isArray(item.components);
   };
 
   return (
     <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Translate Marketplace</h1>
+          <h1 className="text-4xl font-bold mb-4">Research Data Marketplace</h1>
           <p className="text-gray-600 dark:text-gray-300">
             Contribute, access, and utilize medical research data, digital twins, and AI models on the blockchain
           </p>
