@@ -17,24 +17,19 @@ interface BaseItem {
 }
 
 interface Dataset extends BaseItem {
+  type: 'dataset';
   size: string;
-  components?: never;
-  accuracy?: never;
-  performance?: never;
 }
 
 interface DigitalTwin extends BaseItem {
+  type: 'digital-twin';
   components: string[];
   accuracy: string;
-  size?: never;
-  performance?: never;
 }
 
 interface AIModel extends BaseItem {
+  type: 'model';
   performance: string;
-  size?: never;
-  components?: never;
-  accuracy?: never;
 }
 
 type MarketplaceItem = Dataset | DigitalTwin | AIModel;
@@ -45,6 +40,7 @@ export default function Home() {
 
   const mockDatasets: Dataset[] = [
     {
+      type: 'dataset',
       id: 1,
       name: "Patient Genomic Dataset",
       description: "Comprehensive genomic data from 10,000 patients with detailed clinical annotations",
@@ -59,6 +55,7 @@ export default function Home() {
       smartContract: "0x1234...5678"
     },
     {
+      type: 'dataset',
       id: 2,
       name: "Population Health Records",
       description: "Longitudinal health records from 50,000 individuals with lifestyle and environmental data",
@@ -76,6 +73,7 @@ export default function Home() {
 
   const mockDigitalTwins: DigitalTwin[] = [
     {
+      type: 'digital-twin',
       id: 1,
       name: "Cardiovascular Digital Twin",
       description: "AI-powered digital twin for cardiovascular disease prediction and treatment simulation",
@@ -94,6 +92,7 @@ export default function Home() {
 
   const mockModels: AIModel[] = [
     {
+      type: 'model',
       id: 1,
       name: "Drug Interaction Predictor",
       description: "Deep learning model for predicting drug-drug interactions and side effects",
@@ -112,10 +111,6 @@ export default function Home() {
   const items: MarketplaceItem[] = activeTab === 'datasets' ? mockDatasets : 
                                   activeTab === 'digital-twins' ? mockDigitalTwins : 
                                   mockModels;
-
-  const isDigitalTwin = (item: MarketplaceItem): item is DigitalTwin => {
-    return 'components' in item && Array.isArray(item.components);
-  };
 
   return (
     <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
@@ -204,7 +199,7 @@ export default function Home() {
                   {item.description}
                 </p>
                 
-                {isDigitalTwin(item) && (
+                {item.type === 'digital-twin' && (
                   <div className="mb-4">
                     <h4 className="text-sm font-semibold mb-2">Components:</h4>
                     <div className="flex flex-wrap gap-2">
