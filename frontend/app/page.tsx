@@ -16,12 +16,35 @@ interface BaseItem {
   smartContract: string;
 }
 
+interface DatasetMetadata {
+  name: string;
+  description: string;
+  size: string;
+  records: number;
+  format: string;
+  collectionPeriod: string;
+  demographics: {
+    ageRange: string;
+    genderDistribution: string;
+    ethnicity: string;
+  };
+  annotations: string[];
+  qualityMetrics: {
+    signalQuality: string;
+    noiseLevel: string;
+    samplingRate: string;
+  };
+  accessRequirements: string[];
+  citation: string;
+}
+
 interface Dataset extends BaseItem {
   type: 'dataset';
   size: string;
   components?: never;
   accuracy?: never;
   performance?: never;
+  metadata?: DatasetMetadata;
 }
 
 interface DigitalTwin extends BaseItem {
@@ -67,6 +90,7 @@ const ItemComponents = ({ item }: { item: DigitalTwin }) => {
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'datasets' | 'digital-twins' | 'models'>('datasets');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
 
   const mockDatasets: Dataset[] = [
     {
@@ -98,6 +122,52 @@ export default function Home() {
       license: "CC-BY-SA",
       blockchain: "Polygon",
       smartContract: "0x8765...4321"
+    },
+    {
+      type: 'dataset',
+      id: 3,
+      name: "ECG Heart Attack Prediction Dataset",
+      description: "Comprehensive ECG dataset for predicting various forms of heart attacks, collected from multiple healthcare institutions",
+      size: "8.2TB",
+      downloads: 2100,
+      rating: 4.9,
+      price: "3000 DAI",
+      tags: ["ECG", "cardiology", "heart-attack", "prediction"],
+      contributors: ["NUHS", "NHCS", "HEEDB", "MIMIC-IV", "CODE-15", "PTB-XL", "Shaoxing", "SaMi-Trop", "PhysioNet-2017", "UK Biobank"],
+      license: "CC-BY-NC-ND",
+      blockchain: "Ethereum",
+      smartContract: "0xecg1...2345",
+      metadata: {
+        name: "ECG Heart Attack Prediction Dataset",
+        description: "A comprehensive collection of ECG data from multiple healthcare institutions for heart attack prediction research",
+        size: "8.2TB",
+        records: 150000,
+        format: "WFDB, DICOM, CSV",
+        collectionPeriod: "2010-2023",
+        demographics: {
+          ageRange: "18-90 years",
+          genderDistribution: "45% Female, 55% Male",
+          ethnicity: "Diverse (Asian, Caucasian, African, Hispanic)"
+        },
+        annotations: [
+          "ST-segment elevation",
+          "T-wave inversion",
+          "Q-wave presence",
+          "Heart rate variability",
+          "Arrhythmia classification"
+        ],
+        qualityMetrics: {
+          signalQuality: "High (SNR > 20dB)",
+          noiseLevel: "Low (< 5% noise contamination)",
+          samplingRate: "500Hz"
+        },
+        accessRequirements: [
+          "Institutional Review Board approval",
+          "Data Use Agreement",
+          "Research purpose statement"
+        ],
+        citation: "ECG Heart Attack Prediction Dataset Consortium (2023). Comprehensive ECG dataset for heart attack prediction. DOI: 10.1234/ecg-dataset"
+      }
     }
   ];
 
@@ -141,6 +211,91 @@ export default function Home() {
   const items: MarketplaceItem[] = activeTab === 'datasets' ? mockDatasets : 
                                   activeTab === 'digital-twins' ? mockDigitalTwins : 
                                   mockModels;
+
+  const DatasetMetadataView = ({ dataset }: { dataset: Dataset }) => {
+    if (!dataset.metadata) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-start mb-4">
+            <h2 className="text-2xl font-bold">{dataset.metadata.name}</h2>
+            <button
+              onClick={() => setSelectedDataset(null)}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Description</h3>
+              <p className="text-gray-600 dark:text-gray-300">{dataset.metadata.description}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Technical Details</h3>
+                <ul className="space-y-2">
+                  <li><span className="font-medium">Size:</span> {dataset.metadata.size}</li>
+                  <li><span className="font-medium">Records:</span> {dataset.metadata.records.toLocaleString()}</li>
+                  <li><span className="font-medium">Format:</span> {dataset.metadata.format}</li>
+                  <li><span className="font-medium">Collection Period:</span> {dataset.metadata.collectionPeriod}</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Demographics</h3>
+                <ul className="space-y-2">
+                  <li><span className="font-medium">Age Range:</span> {dataset.metadata.demographics.ageRange}</li>
+                  <li><span className="font-medium">Gender Distribution:</span> {dataset.metadata.demographics.genderDistribution}</li>
+                  <li><span className="font-medium">Ethnicity:</span> {dataset.metadata.demographics.ethnicity}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Annotations</h3>
+              <div className="flex flex-wrap gap-2">
+                {dataset.metadata.annotations.map((annotation) => (
+                  <span
+                    key={annotation}
+                    className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm"
+                  >
+                    {annotation}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Quality Metrics</h3>
+              <ul className="space-y-2">
+                <li><span className="font-medium">Signal Quality:</span> {dataset.metadata.qualityMetrics.signalQuality}</li>
+                <li><span className="font-medium">Noise Level:</span> {dataset.metadata.qualityMetrics.noiseLevel}</li>
+                <li><span className="font-medium">Sampling Rate:</span> {dataset.metadata.qualityMetrics.samplingRate}</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Access Requirements</h3>
+              <ul className="list-disc list-inside space-y-1">
+                {dataset.metadata.accessRequirements.map((req) => (
+                  <li key={req} className="text-gray-600 dark:text-gray-300">{req}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Citation</h3>
+              <p className="text-gray-600 dark:text-gray-300">{dataset.metadata.citation}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
@@ -302,8 +457,11 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-2">
-                  <button className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                    Purchase Access
+                  <button 
+                    className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    onClick={() => item.type === 'dataset' && setSelectedDataset(item)}
+                  >
+                    View Details
                   </button>
                   <button className="w-full py-2 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors">
                     View Smart Contract
@@ -314,6 +472,8 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {selectedDataset && <DatasetMetadataView dataset={selectedDataset} />}
     </main>
   );
 }
