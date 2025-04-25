@@ -2,11 +2,40 @@
 
 import { useState } from 'react';
 
+interface BaseItem {
+  id: number;
+  name: string;
+  description: string;
+  downloads: number;
+  rating: number;
+  price: string;
+  tags: string[];
+  contributors: string[];
+  license: string;
+  blockchain: string;
+  smartContract: string;
+}
+
+interface Dataset extends BaseItem {
+  size: string;
+}
+
+interface DigitalTwin extends BaseItem {
+  components: string[];
+  accuracy: string;
+}
+
+interface AIModel extends BaseItem {
+  performance: string;
+}
+
+type MarketplaceItem = Dataset | DigitalTwin | AIModel;
+
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('datasets'); // 'datasets', 'digital-twins', or 'models'
+  const [activeTab, setActiveTab] = useState<'datasets' | 'digital-twins' | 'models'>('datasets');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const mockDatasets = [
+  const mockDatasets: Dataset[] = [
     {
       id: 1,
       name: "Patient Genomic Dataset",
@@ -37,7 +66,7 @@ export default function Home() {
     }
   ];
 
-  const mockDigitalTwins = [
+  const mockDigitalTwins: DigitalTwin[] = [
     {
       id: 1,
       name: "Cardiovascular Digital Twin",
@@ -55,7 +84,7 @@ export default function Home() {
     }
   ];
 
-  const mockModels = [
+  const mockModels: AIModel[] = [
     {
       id: 1,
       name: "Drug Interaction Predictor",
@@ -72,9 +101,13 @@ export default function Home() {
     }
   ];
 
-  const items = activeTab === 'datasets' ? mockDatasets : 
-                activeTab === 'digital-twins' ? mockDigitalTwins : 
-                mockModels;
+  const items: MarketplaceItem[] = activeTab === 'datasets' ? mockDatasets : 
+                                  activeTab === 'digital-twins' ? mockDigitalTwins : 
+                                  mockModels;
+
+  const isDigitalTwin = (item: MarketplaceItem): item is DigitalTwin => {
+    return 'components' in item;
+  };
 
   return (
     <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
@@ -163,7 +196,7 @@ export default function Home() {
                   {item.description}
                 </p>
                 
-                {item.components && (
+                {isDigitalTwin(item) && (
                   <div className="mb-4">
                     <h4 className="text-sm font-semibold mb-2">Components:</h4>
                     <div className="flex flex-wrap gap-2">
