@@ -26,7 +26,7 @@ const Web3Context = createContext<Web3ContextType>({
 });
 
 export const Web3ContextProvider = ({ children }: { children: React.ReactNode }) => {
-  // @ts-ignore
+  // @ts-expect-error - web3-react types are not properly defined
   const { activate, deactivate, account, chainId, library } = useWeb3React();
   const [isConnected, setIsConnected] = useState(false);
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
