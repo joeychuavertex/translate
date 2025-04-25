@@ -120,7 +120,39 @@ export default function Home() {
       contributors: ["Johns Hopkins Medical", "Mayo Clinic"],
       license: "CC-BY-NC",
       blockchain: "Ethereum",
-      smartContract: "0x1234...5678"
+      smartContract: "0x1234...5678",
+      metadata: {
+        name: "Patient Genomic Dataset",
+        description: "A comprehensive collection of genomic data from 10,000 patients with detailed clinical annotations and phenotypic data",
+        size: "2.5TB",
+        records: 10000,
+        format: "FASTA, VCF, BAM",
+        collectionPeriod: "2015-2023",
+        demographics: {
+          ageRange: "0-90 years",
+          genderDistribution: "52% Female, 48% Male",
+          ethnicity: "Diverse (Caucasian, African, Asian, Hispanic)"
+        },
+        annotations: [
+          "Whole genome sequencing",
+          "Exome sequencing",
+          "RNA-seq",
+          "Clinical phenotypes",
+          "Disease associations"
+        ],
+        qualityMetrics: {
+          signalQuality: "High (Q30 > 99%)",
+          noiseLevel: "Low (< 1% contamination)",
+          samplingRate: "30x coverage"
+        },
+        accessRequirements: [
+          "Institutional Review Board approval",
+          "Data Use Agreement",
+          "Research purpose statement",
+          "HIPAA compliance"
+        ],
+        citation: "Patient Genomic Dataset Consortium (2023). Comprehensive genomic dataset for precision medicine research. DOI: 10.1234/genomic-dataset"
+      }
     },
     {
       type: 'dataset',
@@ -135,7 +167,40 @@ export default function Home() {
       contributors: ["WHO", "CDC"],
       license: "CC-BY-SA",
       blockchain: "Polygon",
-      smartContract: "0x8765...4321"
+      smartContract: "0x8765...4321",
+      metadata: {
+        name: "Population Health Records",
+        description: "Longitudinal health records from 50,000 individuals with comprehensive lifestyle and environmental data",
+        size: "15TB",
+        records: 50000,
+        format: "FHIR, HL7, CSV",
+        collectionPeriod: "2010-2023",
+        demographics: {
+          ageRange: "18-85 years",
+          genderDistribution: "51% Female, 49% Male",
+          ethnicity: "Diverse (Caucasian, African, Asian, Hispanic, Native)"
+        },
+        annotations: [
+          "Electronic Health Records",
+          "Lifestyle surveys",
+          "Environmental exposure data",
+          "Social determinants of health",
+          "Healthcare utilization"
+        ],
+        qualityMetrics: {
+          signalQuality: "High (99.9% data completeness)",
+          noiseLevel: "Low (< 2% missing data)",
+          samplingRate: "Quarterly updates"
+        },
+        accessRequirements: [
+          "Institutional Review Board approval",
+          "Data Use Agreement",
+          "Research purpose statement",
+          "HIPAA compliance",
+          "Data security certification"
+        ],
+        citation: "Population Health Records Consortium (2023). Longitudinal health records for population health research. DOI: 10.1234/population-dataset"
+      }
     },
     {
       type: 'dataset',
@@ -654,7 +719,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </div>
+    </div>
 
       {selectedDataset && <DatasetMetadataView dataset={selectedDataset} />}
       {selectedDigitalTwin && <DigitalTwinMetadataView digitalTwin={selectedDigitalTwin} />}
