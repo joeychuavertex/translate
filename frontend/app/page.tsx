@@ -154,6 +154,7 @@ export default function Home() {
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
   const [selectedDigitalTwin, setSelectedDigitalTwin] = useState<DigitalTwin | null>(null);
   const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
+  const [selectedContract, setSelectedContract] = useState<MarketplaceItem | null>(null);
 
   const mockDatasets: Dataset[] = [
     {
@@ -777,6 +778,199 @@ export default function Home() {
     );
   };
 
+  const SmartContractView = ({ item }: { item: MarketplaceItem }) => {
+    const mockContractData = {
+      address: item.smartContract,
+      blockchain: item.blockchain,
+      license: item.license,
+      owner: "0x1234...5678",
+      deployer: "0x8765...4321",
+      deploymentDate: "2024-03-15",
+      lastUpdated: "2024-03-15",
+      version: "1.0.0",
+      functions: [
+        {
+          name: "contributeData",
+          description: "Submit new data contribution",
+          inputs: [
+            { name: "ipfsHash", type: "string", description: "IPFS hash of the data" },
+            { name: "metadata", type: "string", description: "JSON string of metadata" }
+          ],
+          outputs: [],
+          stateMutability: "nonpayable"
+        },
+        {
+          name: "getContributions",
+          description: "Retrieve all contributions",
+          inputs: [],
+          outputs: [
+            { name: "contributions", type: "tuple[]", description: "Array of contribution data" }
+          ],
+          stateMutability: "view"
+        },
+        {
+          name: "getContributionsCount",
+          description: "Get total number of contributions",
+          inputs: [],
+          outputs: [
+            { name: "count", type: "uint256", description: "Total number of contributions" }
+          ],
+          stateMutability: "view"
+        }
+      ],
+      events: [
+        {
+          name: "DataContributed",
+          description: "Emitted when new data is contributed",
+          inputs: [
+            { name: "contributor", type: "address", indexed: true },
+            { name: "ipfsHash", type: "string", indexed: false },
+            { name: "timestamp", type: "uint256", indexed: false }
+          ]
+        }
+      ],
+      security: {
+        audited: true,
+        auditor: "CertiK",
+        auditDate: "2024-03-01",
+        vulnerabilities: "None found",
+        recommendations: "None"
+      },
+      gasOptimization: {
+        averageGasCost: "150,000 gas",
+        optimizationLevel: "High",
+        techniques: ["Batch processing", "Storage optimization", "View functions"]
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h2 className="text-2xl font-bold">Smart Contract Details</h2>
+              <p className="text-gray-500 dark:text-gray-400">Version {mockContractData.version}</p>
+            </div>
+            <button
+              onClick={() => setSelectedContract(null)}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Contract Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p><span className="font-medium">Address:</span> {mockContractData.address}</p>
+                  <p><span className="font-medium">Blockchain:</span> {mockContractData.blockchain}</p>
+                  <p><span className="font-medium">License:</span> {mockContractData.license}</p>
+                </div>
+                <div>
+                  <p><span className="font-medium">Owner:</span> {mockContractData.owner}</p>
+                  <p><span className="font-medium">Deployer:</span> {mockContractData.deployer}</p>
+                  <p><span className="font-medium">Deployment Date:</span> {mockContractData.deploymentDate}</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Functions</h3>
+              <div className="space-y-4">
+                {mockContractData.functions.map((func, index) => (
+                  <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">{func.name}</h4>
+                    <p className="text-gray-600 dark:text-gray-300 mb-2">{func.description}</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="font-medium mb-1">Inputs:</h5>
+                        <ul className="list-disc list-inside">
+                          {func.inputs.map((input, i) => (
+                            <li key={i} className="text-gray-600 dark:text-gray-300">
+                              {input.name} ({input.type}): {input.description}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-1">Outputs:</h5>
+                        <ul className="list-disc list-inside">
+                          {func.outputs.map((output, i) => (
+                            <li key={i} className="text-gray-600 dark:text-gray-300">
+                              {output.name} ({output.type}): {output.description}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                      State Mutability: {func.stateMutability}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Events</h3>
+              <div className="space-y-4">
+                {mockContractData.events.map((event, index) => (
+                  <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">{event.name}</h4>
+                    <p className="text-gray-600 dark:text-gray-300 mb-2">{event.description}</p>
+                    <h5 className="font-medium mb-1">Inputs:</h5>
+                    <ul className="list-disc list-inside">
+                      {event.inputs.map((input, i) => (
+                        <li key={i} className="text-gray-600 dark:text-gray-300">
+                          {input.name} ({input.type}) {input.indexed ? "(indexed)" : ""}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Security</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p><span className="font-medium">Audited:</span> {mockContractData.security.audited ? "Yes" : "No"}</p>
+                  <p><span className="font-medium">Auditor:</span> {mockContractData.security.auditor}</p>
+                  <p><span className="font-medium">Audit Date:</span> {mockContractData.security.auditDate}</p>
+                </div>
+                <div>
+                  <p><span className="font-medium">Vulnerabilities:</span> {mockContractData.security.vulnerabilities}</p>
+                  <p><span className="font-medium">Recommendations:</span> {mockContractData.security.recommendations}</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Gas Optimization</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p><span className="font-medium">Average Gas Cost:</span> {mockContractData.gasOptimization.averageGasCost}</p>
+                  <p><span className="font-medium">Optimization Level:</span> {mockContractData.gasOptimization.optimizationLevel}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-1">Techniques:</h4>
+                  <ul className="list-disc list-inside">
+                    {mockContractData.gasOptimization.techniques.map((tech, index) => (
+                      <li key={index} className="text-gray-600 dark:text-gray-300">{tech}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
@@ -951,7 +1145,10 @@ export default function Home() {
                   >
                     View Details
                   </button>
-                  <button className="w-full py-2 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors">
+                  <button 
+                    className="w-full py-2 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors"
+                    onClick={() => setSelectedContract(item)}
+                  >
                     View Smart Contract
                   </button>
                 </div>
@@ -964,6 +1161,7 @@ export default function Home() {
       {selectedDataset && <DatasetMetadataView dataset={selectedDataset} />}
       {selectedDigitalTwin && <DigitalTwinMetadataView digitalTwin={selectedDigitalTwin} />}
       {selectedModel && <AIModelMetadataView model={selectedModel} />}
+      {selectedContract && <SmartContractView item={selectedContract} />}
     </main>
   );
 }
