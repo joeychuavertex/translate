@@ -96,6 +96,54 @@ interface AIModel extends BaseItem {
   size?: never;
   components?: never;
   accuracy?: never;
+  metadata?: {
+    name: string;
+    description: string;
+    version: string;
+    lastUpdated: string;
+    architecture: {
+      type: string;
+      layers: string[];
+      parameters: string;
+    };
+    trainingData: {
+      size: string;
+      samples: number;
+      sources: string[];
+      demographics: {
+        ageRange: string;
+        genderDistribution: string;
+        ethnicity: string;
+      };
+    };
+    performanceMetrics: {
+      accuracy: string;
+      sensitivity: string;
+      specificity: string;
+      auc: string;
+      precision: string;
+      recall: string;
+      f1Score: string;
+    };
+    validation: {
+      method: string;
+      testSetSize: string;
+      externalValidation: string;
+      results: string;
+    };
+    deployment: {
+      inferenceTime: string;
+      hardwareRequirements: string;
+      memoryUsage: string;
+      supportedPlatforms: string[];
+    };
+    maintenance: {
+      updateFrequency: string;
+      support: string;
+      documentation: string;
+    };
+    citation: string;
+  };
 }
 
 type MarketplaceItem = Dataset | DigitalTwin | AIModel;
@@ -105,6 +153,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
   const [selectedDigitalTwin, setSelectedDigitalTwin] = useState<DigitalTwin | null>(null);
+  const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
 
   const mockDatasets: Dataset[] = [
     {
@@ -320,17 +369,76 @@ export default function Home() {
     {
       type: 'model',
       id: 1,
-      name: "Drug Interaction Predictor",
-      description: "Deep learning model for predicting drug-drug interactions and side effects",
-      performance: "AUC: 0.95",
+      name: "ECG Heart Attack Prediction Model",
+      description: "Deep learning model for predicting heart attacks from ECG signals with 98% accuracy",
+      performance: "98% accuracy",
       downloads: 1500,
-      rating: 4.7,
-      price: "5000 DAI",
-      tags: ["pharmacology", "deep-learning", "drug-discovery"],
-      contributors: ["Pfizer AI Lab"],
+      rating: 4.9,
+      price: "2000 DAI",
+      tags: ["ECG", "deep-learning", "cardiology"],
+      contributors: ["Stanford Medicine", "MIT"],
       license: "Commercial",
       blockchain: "Ethereum",
-      smartContract: "0xijkl...mnop"
+      smartContract: "0xabcd...efgh",
+      metadata: {
+        name: "ECG Heart Attack Prediction Model",
+        description: "A state-of-the-art deep learning model trained on over 100,000 ECG recordings for early heart attack prediction",
+        version: "2.1.0",
+        lastUpdated: "2024-03-15",
+        architecture: {
+          type: "Deep Neural Network",
+          layers: [
+            "Input Layer (ECG signal)",
+            "Convolutional Layers (3)",
+            "LSTM Layers (2)",
+            "Attention Mechanism",
+            "Dense Layers (2)",
+            "Output Layer (Prediction)"
+          ],
+          parameters: "15M trainable parameters"
+        },
+        trainingData: {
+          size: "8.2TB",
+          samples: 100000,
+          sources: [
+            "NUHS ECG Database",
+            "MIT-BIH Arrhythmia Database",
+            "PTB Diagnostic ECG Database"
+          ],
+          demographics: {
+            ageRange: "18-90 years",
+            genderDistribution: "45% Female, 55% Male",
+            ethnicity: "Diverse (Asian, Caucasian, African, Hispanic)"
+          }
+        },
+        performanceMetrics: {
+          accuracy: "98%",
+          sensitivity: "99.2%",
+          specificity: "97.8%",
+          auc: "0.987",
+          precision: "98.5%",
+          recall: "99.1%",
+          f1Score: "0.988"
+        },
+        validation: {
+          method: "10-fold cross-validation",
+          testSetSize: "20,000 samples",
+          externalValidation: "Yes (5 independent hospitals)",
+          results: "Consistent performance across all validation sets"
+        },
+        deployment: {
+          inferenceTime: "< 100ms",
+          hardwareRequirements: "GPU recommended",
+          memoryUsage: "2GB RAM",
+          supportedPlatforms: ["Linux", "Windows", "macOS"]
+        },
+        maintenance: {
+          updateFrequency: "Quarterly",
+          support: "24/7 technical support",
+          documentation: "Comprehensive API documentation and user guides"
+        },
+        citation: "ECG Heart Attack Prediction Model Consortium (2024). Advanced deep learning model for early heart attack detection. DOI: 10.1234/ecg-model"
+      }
     }
   ];
 
@@ -539,6 +647,136 @@ export default function Home() {
     );
   };
 
+  const AIModelMetadataView = ({ model }: { model: AIModel }) => {
+    if (!model.metadata) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h2 className="text-2xl font-bold">{model.metadata.name}</h2>
+              <p className="text-gray-500 dark:text-gray-400">Version {model.metadata.version}</p>
+            </div>
+            <button
+              onClick={() => setSelectedModel(null)}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Description</h3>
+              <p className="text-gray-600 dark:text-gray-300">{model.metadata.description}</p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Architecture</h3>
+              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <p className="font-medium mb-2">Type: {model.metadata.architecture.type}</p>
+                <p className="font-medium mb-2">Parameters: {model.metadata.architecture.parameters}</p>
+                <h4 className="font-medium mb-2">Layers:</h4>
+                <ul className="list-disc list-inside space-y-1">
+                  {model.metadata.architecture.layers.map((layer, index) => (
+                    <li key={index} className="text-gray-600 dark:text-gray-300">{layer}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Training Data</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="font-medium">Size: {model.metadata.trainingData.size}</p>
+                  <p className="font-medium">Samples: {model.metadata.trainingData.samples.toLocaleString()}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Sources:</h4>
+                  <ul className="list-disc list-inside">
+                    {model.metadata.trainingData.sources.map((source, index) => (
+                      <li key={index} className="text-gray-600 dark:text-gray-300">{source}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-4">
+                <h4 className="font-medium mb-2">Demographics:</h4>
+                <ul className="space-y-1">
+                  <li>Age Range: {model.metadata.trainingData.demographics.ageRange}</li>
+                  <li>Gender Distribution: {model.metadata.trainingData.demographics.genderDistribution}</li>
+                  <li>Ethnicity: {model.metadata.trainingData.demographics.ethnicity}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Performance Metrics</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p>Accuracy: {model.metadata.performanceMetrics.accuracy}</p>
+                  <p>Sensitivity: {model.metadata.performanceMetrics.sensitivity}</p>
+                  <p>Specificity: {model.metadata.performanceMetrics.specificity}</p>
+                </div>
+                <div>
+                  <p>AUC: {model.metadata.performanceMetrics.auc}</p>
+                  <p>Precision: {model.metadata.performanceMetrics.precision}</p>
+                  <p>Recall: {model.metadata.performanceMetrics.recall}</p>
+                  <p>F1 Score: {model.metadata.performanceMetrics.f1Score}</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Validation</h3>
+              <div className="space-y-2">
+                <p>Method: {model.metadata.validation.method}</p>
+                <p>Test Set Size: {model.metadata.validation.testSetSize}</p>
+                <p>External Validation: {model.metadata.validation.externalValidation}</p>
+                <p>Results: {model.metadata.validation.results}</p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Deployment</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p>Inference Time: {model.metadata.deployment.inferenceTime}</p>
+                  <p>Hardware Requirements: {model.metadata.deployment.hardwareRequirements}</p>
+                  <p>Memory Usage: {model.metadata.deployment.memoryUsage}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Supported Platforms:</h4>
+                  <ul className="list-disc list-inside">
+                    {model.metadata.deployment.supportedPlatforms.map((platform, index) => (
+                      <li key={index} className="text-gray-600 dark:text-gray-300">{platform}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Maintenance</h3>
+              <div className="space-y-2">
+                <p>Update Frequency: {model.metadata.maintenance.updateFrequency}</p>
+                <p>Support: {model.metadata.maintenance.support}</p>
+                <p>Documentation: {model.metadata.maintenance.documentation}</p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Citation</h3>
+              <p className="text-gray-600 dark:text-gray-300">{model.metadata.citation}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
@@ -706,6 +944,8 @@ export default function Home() {
                         setSelectedDataset(item);
                       } else if (item.type === 'digital-twin') {
                         setSelectedDigitalTwin(item);
+                      } else if (item.type === 'model') {
+                        setSelectedModel(item);
                       }
                     }}
                   >
@@ -723,6 +963,7 @@ export default function Home() {
 
       {selectedDataset && <DatasetMetadataView dataset={selectedDataset} />}
       {selectedDigitalTwin && <DigitalTwinMetadataView digitalTwin={selectedDigitalTwin} />}
+      {selectedModel && <AIModelMetadataView model={selectedModel} />}
     </main>
   );
 }
