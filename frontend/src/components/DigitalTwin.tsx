@@ -89,7 +89,7 @@ const ResearchDataExchangeABI = [
     "stateMutability": "view",
     "type": "function"
   }
-];
+] as const;
 
 interface DigitalTwin {
   id: number;
