@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { InjectedConnector } from '@web3-react/injected-connector';
-import { useWeb3React, Web3ReactProvider } from '@web3-react/core';
+import { useWeb3React } from '@web3-react/core';
 
 const injected = new InjectedConnector({
   supportedChainIds: [1, 3, 4, 5, 42, 1337] // Mainnet, Ropsten, Rinkeby, Goerli, Kovan, Local
@@ -26,7 +26,7 @@ const Web3Context = createContext<Web3ContextType>({
 });
 
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
-  const { activate, deactivate, account, chainId, library } = useWeb3React<Web3ReactProvider>();
+  const { activate: web3Activate, deactivate, account, chainId, library } = useWeb3React();
   const [isConnected, setIsConnected] = useState(false);
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
 
@@ -38,7 +38,7 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
 
   const connect = async () => {
     try {
-      await activate(injected);
+      await web3Activate(injected);
       setIsConnected(true);
     } catch (error) {
       console.error('Failed to connect:', error);
