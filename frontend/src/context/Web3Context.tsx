@@ -1,11 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import { InjectedConnector } from '@web3-react/injected-connector';
-import { useWeb3React } from '@web3-react/core';
-
-const injected = new InjectedConnector({
-  supportedChainIds: [1, 3, 4, 5, 42, 1337] // Mainnet, Ropsten, Rinkeby, Goerli, Kovan, Local
-});
+import { useAccount, useConnect, useDisconnect, useProvider } from 'wagmi';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 
 interface Web3ContextType {
   connect: () => Promise<void>;
@@ -26,30 +22,32 @@ const Web3Context = createContext<Web3ContextType>({
 });
 
 export const Web3ContextProvider = ({ children }: { children: React.ReactNode }) => {
-  // @ts-expect-error - web3-react types are not properly defined
-  const { activate, deactivate, account, chainId, library } = useWeb3React();
-  const [isConnected, setIsConnected] = useState(false);
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
+  const { address, isConnected } = useAccount();
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  const { disconnect } = useDisconnect();
+  const provider = useProvider();
+
+  const [ethersProvider, setEthersProvider] = useState<ethers.providers.Web3Provider | null>(null);
 
   useEffect(() => {
-    if (library) {
-      setProvider(library as ethers.providers.Web3Provider);
+    if (provider) {
+      setEthersProvider(provider as ethers.providers.Web3Provider);
     }
-  }, [library]);
+  }, [provider]);
 
-  const connect = async () => {
+  const handleConnect = async () => {
     try {
-      await activate(injected);
-      setIsConnected(true);
+      await connect();
     } catch (error) {
       console.error('Failed to connect:', error);
     }
   };
 
-  const disconnect = () => {
+  const handleDisconnect = () => {
     try {
-      deactivate();
-      setIsConnected(false);
+      disconnect();
     } catch (error) {
       console.error('Failed to disconnect:', error);
     }
@@ -58,12 +56,12 @@ export const Web3ContextProvider = ({ children }: { children: React.ReactNode })
   return (
     <Web3Context.Provider
       value={{
-        connect,
-        disconnect,
+        connect: handleConnect,
+        disconnect: handleDisconnect,
         isConnected,
-        account: account || null,
-        chainId: chainId || null,
-        provider,
+        account: address || null,
+        chainId: null, // You can get this from wagmi if needed
+        provider: ethersProvider,
       }}
     >
       {children}
