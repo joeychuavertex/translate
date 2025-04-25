@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useWeb3 } from '../context/Web3Context';
 import { create } from 'ipfs-http-client';
+import { ethers } from 'ethers';
 
 // Temporary ABI until contract compilation is set up
 const ResearchDataExchangeABI = [
@@ -125,7 +126,7 @@ export const DataContribution = () => {
 
       // Get contract instance
       const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-      const contract = new ethers.Contract(contractAddress, ResearchDataExchangeABI.abi, provider.getSigner());
+      const contract = new ethers.Contract(contractAddress, ResearchDataExchangeABI, provider.getSigner());
 
       // Call contributeData function
       const tx = await contract.contributeData(
