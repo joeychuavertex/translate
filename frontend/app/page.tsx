@@ -34,6 +34,10 @@ interface AIModel extends BaseItem {
 
 type MarketplaceItem = Dataset | DigitalTwin | AIModel;
 
+const isDigitalTwin = (item: MarketplaceItem): item is DigitalTwin => {
+  return item.type === 'digital-twin';
+};
+
 const ItemComponents = ({ item }: { item: DigitalTwin }) => {
   return (
     <div className="mb-4">
@@ -217,7 +221,7 @@ export default function Home() {
                   {item.description}
                 </p>
                 
-                {item.type === 'digital-twin' && <ItemComponents item={item} />}
+                {isDigitalTwin(item) && <ItemComponents item={item} />}
 
                 <div className="flex items-center mb-4">
                   <div className="flex items-center text-yellow-400 mr-4">
