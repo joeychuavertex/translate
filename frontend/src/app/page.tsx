@@ -2,7 +2,7 @@
 
 import { Web3Provider } from '../context/Web3Context';
 import { DataContribution } from '../components/DataContribution';
-import { DigitalTwin } from '../components/DigitalTwin';
+import { DigitalTwinList } from '../components/DigitalTwin';
 import { useWeb3 } from '../context/Web3Context';
 
 export default function Home() {
@@ -20,7 +20,7 @@ export default function Home() {
             <div className="space-y-8">
               <WalletConnect />
               <DataContribution />
-              <DigitalTwin />
+              <DigitalTwinList />
             </div>
           </div>
         </main>

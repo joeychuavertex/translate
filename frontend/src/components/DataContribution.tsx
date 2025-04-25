@@ -142,7 +142,7 @@ export const DataContribution = () => {
       setDataType('');
       setIsPublic(false);
       setTags('');
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error contributing data:', err);
       setError('Failed to contribute data. Please try again.');
     } finally {

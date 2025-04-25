@@ -10,7 +10,7 @@ interface DigitalTwin {
   price: number;
 }
 
-export const DigitalTwin = () => {
+export const DigitalTwinList = () => {
   const { isConnected, account, provider } = useWeb3();
   const [digitalTwins, setDigitalTwins] = useState<DigitalTwin[]>([]);
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ export const DigitalTwin = () => {
       ];
       
       setDigitalTwins(mockTwins);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error loading digital twins:', err);
       setError('Failed to load digital twins. Please try again.');
     } finally {
