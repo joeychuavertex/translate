@@ -26,8 +26,14 @@ const Web3Context = createContext<Web3ContextType>({
 });
 
 export const Web3ContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const web3React = useWeb3React() as any;
-  const [isConnected, setIsConnected] = useState(false);
+  const web3React = useWeb3React() as unknown as {
+    activate: (connector: InjectedConnector) => Promise<void>;
+    deactivate: () => void;
+    active: boolean;
+    account: string | null;
+    chainId: number | null;
+    library: ethers.providers.Web3Provider | null;
+  };
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
 
   useEffect(() => {
@@ -39,7 +45,6 @@ export const Web3ContextProvider = ({ children }: { children: React.ReactNode })
   const connect = async () => {
     try {
       await web3React.activate(injected);
-      setIsConnected(true);
     } catch (error) {
       console.error('Failed to connect:', error);
     }
@@ -48,7 +53,6 @@ export const Web3ContextProvider = ({ children }: { children: React.ReactNode })
   const disconnect = () => {
     try {
       web3React.deactivate();
-      setIsConnected(false);
     } catch (error) {
       console.error('Failed to disconnect:', error);
     }
