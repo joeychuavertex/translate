@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useWeb3 } from '../context/Web3Context';
-import { create } from 'ipfs-http-client';
+import { create, IPFSHTTPClient } from 'ipfs-http-client';
 import { ethers } from 'ethers';
 
 // Temporary ABI until contract compilation is set up
@@ -92,7 +92,7 @@ const ResearchDataExchangeABI = [
   }
 ];
 
-const ipfs = create({ url: 'https://ipfs.infura.io:5001/api/v0' });
+const ipfs: IPFSHTTPClient = create({ url: 'https://ipfs.infura.io:5001/api/v0' });
 
 export const DataContribution = () => {
   const { isConnected, account, provider } = useWeb3();
@@ -131,13 +131,8 @@ export const DataContribution = () => {
       }
       const contract = new ethers.Contract(contractAddress, ResearchDataExchangeABI, provider.getSigner());
 
-      // Call contributeData function
-      const tx = await contract.contributeData(
-        ipfsHash,
-        dataType,
-        isPublic,
-        tags.split(',').map(tag => tag.trim())
-      );
+      // Call contributeData function with correct parameters
+      const tx = await contract.contributeData(ipfsHash);
 
       await tx.wait();
       alert('Data contributed successfully!');

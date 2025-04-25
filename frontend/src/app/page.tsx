@@ -2,7 +2,7 @@
 
 import { Web3Provider } from '../context/Web3Context';
 import { DataContribution } from '../components/DataContribution';
-import { DigitalTwinManager } from '../components/DigitalTwin';
+import { DigitalTwin } from '../components/DigitalTwin';
 import { useWeb3 } from '../context/Web3Context';
 
 export default function Home() {
@@ -20,7 +20,7 @@ export default function Home() {
             <div className="space-y-8">
               <WalletConnect />
               <DataContribution />
-              <DigitalTwinManager />
+              <DigitalTwin />
             </div>
           </div>
         </main>
@@ -29,7 +29,7 @@ export default function Home() {
   );
 }
 
-function WalletConnect() {
+const WalletConnect = () => {
   const { connect, disconnect, isConnected, account } = useWeb3();
 
   return (
@@ -56,4 +56,4 @@ function WalletConnect() {
       )}
     </div>
   );
-} 
+}; 
