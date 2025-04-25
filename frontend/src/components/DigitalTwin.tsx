@@ -120,7 +120,6 @@ export const DigitalTwin = () => {
       if (!contractAddress) {
         throw new Error('Contract address not configured');
       }
-      const contract = new ethers.Contract(contractAddress, ResearchDataExchangeABI, provider.getSigner());
       
       // Mock data for now - replace with actual contract calls
       const mockTwins: DigitalTwin[] = [
